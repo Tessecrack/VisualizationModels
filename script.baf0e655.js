@@ -36407,7 +36407,7 @@ module.exports = {
   "points": [[-1, -1, -1], [-1, 1, -1], [1, 1, -1], [1, -1, -1], [-1, -1, 1], [-1, 1, 1], [1, 1, 1], [1, -1, 1], [0, 0, 1.5]],
   "mesh": {
     "PZT-4": {
-      "cubes": [[0, 1, 2, 3, 4, 5, 6, 7], [1, 1, 1]],
+      "cubes": [[0, 1, 2, 3, 4, 5, 6, 7]],
       "thetra": [[5, 6, 7, 8]],
       "triangles": [],
       "squares": []
@@ -36634,13 +36634,46 @@ exports.default = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var ObjectOnScene = function ObjectOnScene(name, points) {
-  _classCallCheck(this, ObjectOnScene);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-  this.name = name;
-  this.points = points;
-  this.isVisible = true;
-};
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var ObjectOnScene =
+/*#__PURE__*/
+function () {
+  function ObjectOnScene(name, points) {
+    _classCallCheck(this, ObjectOnScene);
+
+    this.name = name;
+    this.points = points;
+    this.isVisible = true;
+    this.pointsObjectGrid = [];
+    this.color = "rgb(" + this._getRandom(160, 255) + "," + this._getRandom(160, 255) + "," + this._getRandom(160, 255) + ")";
+  }
+
+  _createClass(ObjectOnScene, [{
+    key: "getObjectGrid",
+    value: function getObjectGrid() {
+      for (var i = 0; i < this.points.length; i++) {
+        for (var j = i + 1; j < this.points.length; j++) {
+          var beginPosition = new Array(this.points[i][0], this.points[i][1], this.points[i][2]);
+          var endPosition = new Array(this.points[j][0], this.points[j][1], this.points[j][2]);
+          this.pointsObjectGrid.push(beginPosition);
+          this.pointsObjectGrid.push(endPosition);
+        }
+      }
+
+      return this.pointsObjectGrid;
+    }
+  }, {
+    key: "_getRandom",
+    value: function _getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  }]);
+
+  return ObjectOnScene;
+}();
 
 exports.default = ObjectOnScene;
 },{}],"src/script.js":[function(require,module,exports) {
@@ -36685,10 +36718,11 @@ var renderer = new THREE.WebGLRenderer({
 });
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(60, canvas.width / canvas.height);
-var objectsOnScene = [];
+var objectsInDataset = [];
 var reader = new _datasetReader.default(_small_dataset.default);
 init();
 loadObjectsOnScene();
+draw(objectsInDataset[0]);
 animate();
 /* ------------------------------------------------------------------------- */
 
@@ -36698,7 +36732,7 @@ function init() {
     color: 0x404040
   });
   var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  camera.position.z = 10;
+  camera.position.z = 15;
   camera.position.y = 5;
   plane.rotation.x = -0.5 * Math.PI;
   plane.position.x = 0;
@@ -36716,6 +36750,23 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+function draw(object) {
+  var listPoints = object.getObjectGrid();
+  var objectPoints = [];
+
+  for (var i = 0; i < listPoints.length; i++) {
+    var vector = new THREE.Vector3(listPoints[i][0], listPoints[i][1], listPoints[i][2]);
+    objectPoints.push(vector);
+  }
+
+  var material = new THREE.LineBasicMaterial({
+    color: object.color
+  });
+  var geometry = new THREE.BufferGeometry().setFromPoints(objectPoints);
+  var line = new THREE.Line(geometry, material);
+  scene.add(line);
+}
+
 function loadObjectsOnScene() {
   var figures = reader.getMeshes();
 
@@ -36729,8 +36780,8 @@ function loadObjectsOnScene() {
           value = _step$value[1];
 
       for (var i = 0; i < value.length; i++) {
-        var object = new _objectOnScene.default(key, value[i]);
-        objectsOnScene.push(object);
+        var object = new _objectOnScene.default(key + i, value[i]);
+        objectsInDataset.push(object);
       }
     }
   } catch (err) {
@@ -36767,7 +36818,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55667" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56337" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
