@@ -36649,6 +36649,9 @@ function () {
     this.isVisible = true;
     this.pointsObjectGrid = [];
     this.color = "rgb(" + this._getRandom(160, 255) + "," + this._getRandom(160, 255) + "," + this._getRandom(160, 255) + ")";
+    this.nameContentHTMLButton = this.name + "button";
+    this.nameContentHTMLCheckbox = this.name + "checkbox";
+    this.styleContentHTML = "<font><div><input type=\"checkbox\" id=" + this.nameContentHTMLCheckbox + " name=" + this.name + " checked> <label for=" + this.name + ">" + this.name + "</label><button id=\"" + this.nameContentHTMLButton + "\" style=\"margin: 3px 3px 3px 10px; padding: 2px 2px 2px 2px\"><font style=\"\">Выбрать</font></button></div></font>";
   }
 
   _createClass(ObjectOnScene, [{
@@ -36712,6 +36715,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var canvas = document.getElementById('canvas');
+var listNameObjects = document.getElementById('listNameObjects');
 (0, _initScene.default)(document);
 var renderer = new THREE.WebGLRenderer({
   canvas: canvas
@@ -36780,14 +36784,21 @@ function loadObjectsOnScene() {
           value = _step$value[1];
 
       for (var i = 0; i < value.length; i++) {
-        var object = new _objectOnScene.default(key + i, value[i]);
-        objectsInDataset.push(object);
+        var _object = new _objectOnScene.default(key + i, value[i]);
+
+        if (i > 0) _object.isVisible = false;
+        objectsInDataset.push(_object);
       }
     }
   } catch (err) {
     _iterator.e(err);
   } finally {
     _iterator.f();
+  }
+
+  for (var _i = 0, _objectsInDataset = objectsInDataset; _i < _objectsInDataset.length; _i++) {
+    var object = _objectsInDataset[_i];
+    listNameObjects.insertAdjacentHTML('afterend', object.styleContentHTML);
   }
 }
 },{"three":"node_modules/three/build/three.module.js","../data/small_dataset.json":"data/small_dataset.json","./scene-controller.js":"src/scene-controller.js","./init-scene.js":"src/init-scene.js","./dataset-reader":"src/dataset-reader.js","./object-on-scene":"src/object-on-scene.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -36818,7 +36829,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56337" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57826" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
