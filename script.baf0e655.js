@@ -36646,9 +36646,9 @@ function () {
 
     this.name = name;
     this.points = points;
-    this.isVisible = true;
+    this.checker = undefined;
     this.pointsObjectGrid = [];
-    this.color = "rgb(" + this._getRandom(160, 255) + "," + this._getRandom(160, 255) + "," + this._getRandom(160, 255) + ")";
+    this.color = "rgb(" + this._getRandom(130, 255) + "," + this._getRandom(130, 255) + "," + this._getRandom(130, 255) + ")";
     this.nameContentHTMLButton = this.name + "button";
     this.nameContentHTMLCheckbox = this.name + "checkbox";
     this.styleContentHTML = "<font><div><input type=\"checkbox\" id=" + this.nameContentHTMLCheckbox + " name=" + this.name + " checked> <label for=" + this.name + ">" + this.name + "</label><button id=\"" + this.nameContentHTMLButton + "\" style=\"margin: 3px 3px 3px 10px; padding: 2px 2px 2px 2px\"><font style=\"\">Выбрать</font></button></div></font>";
@@ -36724,9 +36724,14 @@ var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(60, canvas.width / canvas.height);
 var objectsInDataset = [];
 var reader = new _datasetReader.default(_small_dataset.default);
+var listObjects = [];
+var pointOfView = {
+  x: 0,
+  y: 0,
+  z: 0
+};
 init();
-loadObjectsOnScene();
-draw(objectsInDataset[0]);
+loadObjectsFromDataset();
 animate();
 /* ------------------------------------------------------------------------- */
 
@@ -36752,26 +36757,17 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+  draw();
 }
 
-function draw(object) {
-  var listPoints = object.getObjectGrid();
-  var objectPoints = [];
-
-  for (var i = 0; i < listPoints.length; i++) {
-    var vector = new THREE.Vector3(listPoints[i][0], listPoints[i][1], listPoints[i][2]);
-    objectPoints.push(vector);
+function draw() {
+  for (var _i = 0, _listObjects = listObjects; _i < _listObjects.length; _i++) {
+    var object = _listObjects[_i];
+    object.line.visible = object.object.checker.checked;
   }
-
-  var material = new THREE.LineBasicMaterial({
-    color: object.color
-  });
-  var geometry = new THREE.BufferGeometry().setFromPoints(objectPoints);
-  var line = new THREE.Line(geometry, material);
-  scene.add(line);
 }
 
-function loadObjectsOnScene() {
+function loadObjectsFromDataset() {
   var figures = reader.getMeshes();
 
   var _iterator = _createForOfIteratorHelper(figures),
@@ -36783,10 +36779,9 @@ function loadObjectsOnScene() {
           key = _step$value[0],
           value = _step$value[1];
 
-      for (var i = 0; i < value.length; i++) {
-        var _object = new _objectOnScene.default(key + i, value[i]);
+      for (var _i3 = 0; _i3 < value.length; _i3++) {
+        var _object = new _objectOnScene.default(key + _i3, value[_i3]);
 
-        if (i > 0) _object.isVisible = false;
         objectsInDataset.push(_object);
       }
     }
@@ -36796,9 +36791,31 @@ function loadObjectsOnScene() {
     _iterator.f();
   }
 
-  for (var _i = 0, _objectsInDataset = objectsInDataset; _i < _objectsInDataset.length; _i++) {
-    var object = _objectsInDataset[_i];
+  for (var _i2 = 0, _objectsInDataset = objectsInDataset; _i2 < _objectsInDataset.length; _i2++) {
+    var object = _objectsInDataset[_i2];
     listNameObjects.insertAdjacentHTML('afterend', object.styleContentHTML);
+    var checker = document.getElementById(object.nameContentHTMLCheckbox);
+    checker.checked = true;
+    object.checker = checker;
+    var listPoints = object.getObjectGrid();
+    var objectPoints = [];
+
+    for (var i = 0; i < listPoints.length; i++) {
+      var vector = new THREE.Vector3(listPoints[i][0], listPoints[i][1], listPoints[i][2]);
+      objectPoints.push(vector);
+    }
+
+    var material = new THREE.LineBasicMaterial({
+      color: object.color
+    });
+    var geometry = new THREE.BufferGeometry().setFromPoints(objectPoints);
+    var line = new THREE.Line(geometry, material);
+    console.log(line);
+    scene.add(line);
+    listObjects.push({
+      object: object,
+      line: line
+    });
   }
 }
 },{"three":"node_modules/three/build/three.module.js","../data/small_dataset.json":"data/small_dataset.json","./scene-controller.js":"src/scene-controller.js","./init-scene.js":"src/init-scene.js","./dataset-reader":"src/dataset-reader.js","./object-on-scene":"src/object-on-scene.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
