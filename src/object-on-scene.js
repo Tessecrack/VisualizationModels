@@ -39,25 +39,13 @@ export default class ObjectOnScene {
             default: break;
         }
 
-        this.pointsObjectGrid = [];
-        this._getObjectGrid();
+        this.mesh = undefined; 
+        this.lineSegments = undefined; 
 
-        this.pointsMesh = [];
-        this._getMesh();
-    }
-
-    _getObjectGrid() {
-        this.pointsObjectGrid = this.figure.pointsGrid;
-    }
-
-    _getMesh() {
         this.pointsMesh = this.figure.pointsMesh;
-    }
 
-    _getDistanceBetweenPoints(firstPoint, secondPoint) {
-        return Math.sqrt(Math.pow(firstPoint[0] - secondPoint[0], 2) 
-        + Math.pow(firstPoint[1] - secondPoint[1], 2) 
-        + Math.pow(firstPoint[2] - secondPoint[2], 2));
+        this.listPolygons = [];
+        this.colorPolygon = 0xffff00;
     }
 
     _getRandom(min, max) {

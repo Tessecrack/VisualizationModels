@@ -8,25 +8,11 @@ export default class Triangle {
         this.countEdgesToVertice = 1;           //количество рёбер примыкающих к вершине
         this.countPolygonsInOneFace = 1;        //количество полигонов в одной грани
 
-        this.pointsGrid = [];
-        this._getGrid();
         this.colorMesh = 0xFF1122;
-        this.pointsMesh = [];
-        this._getMesh();
-    }
-    _getGrid() {
-        let lines = [];
-        for (let i = 0; i < this.vertices.length; i++) {
-            let firstPoint = this.vertices[i];
-            for (let j = i + 1; j < this.vertices.length; j++) {
-                let secondPoint = this.vertices[j];
-                this.pointsGrid.push(firstPoint);
-                this.pointsGrid.push(secondPoint);
-            }
-        }
+        this.pointsMesh = this._getMesh();
     }
 
     _getMesh() {
-        this.pointsMesh = this.vertices; 
+        return this.vertices; 
     }
 }

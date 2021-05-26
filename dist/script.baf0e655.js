@@ -36404,13 +36404,13 @@ if (typeof window !== 'undefined') {
 }
 },{}],"data/small_dataset.json":[function(require,module,exports) {
 module.exports = {
-  "points": [[-1, -1, -1], [-1, 1, -1], [1, 1, -1], [1, -1, -1], [-1, -1, 1], [-1, 1, 1], [1, 1, 1], [1, -1, 1], [0, 0, 1.5]],
+  "points": [[-1, -1, -1], [-1, 1, -1], [1, 1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1], [-1, 1, 1], [1, 1, 1], [0, 0, 1.5], [1, 1, -2], [1, -1, -2], [-1, 1, -2], [1, 1, 4], [1, -1, 4], [-1, -1, 4], [-1, 1, 4]],
   "mesh": {
     "PZT-4": {
-      "cubes": [],
+      "cubes": [[0, 1, 2, 3, 4, 5, 6, 7]],
       "thetra": [[5, 6, 7, 8]],
-      "triangles": [[0, 1, 2]],
-      "squares": [[5, 6, 7, 4]]
+      "triangles": [[9, 10, 11]],
+      "squares": [[12, 13, 14, 15]]
     }
   },
   "type": 5,
@@ -36429,18 +36429,7 @@ function initSceneController(canvas, objectUnderControl, camera, WIDTH_CANVAS, H
 }
 
 function orbitControls(canvas, objectUnderControl, camera, WIDTH_CANVAS, HEIGHT_CANVAS) {
-  var wheelState = {
-    holdWheel: false,
-    beginPositionX: undefined,
-    beginPositionY: undefined,
-    previousPositionX: undefined,
-    previousPositionY: undefined,
-    coefYaw: 10,
-    //X
-    coefPitch: 10 //Y
-
-  };
-  var leftMouseButtonState = {
+  var wheelMouseState = {
     holdButton: false,
     beginPositionX: undefined,
     beginPositionY: undefined,
@@ -36450,26 +36439,16 @@ function orbitControls(canvas, objectUnderControl, camera, WIDTH_CANVAS, HEIGHT_
   };
 
   canvas.onmousedown = function (event) {
-    if (event.which == 2 && !wheelState.holdWheel) {
-      wheelState.beginPositionX = event.offsetX;
-      wheelState.beginPositionY = event.offsetY;
-      wheelState.holdWheel = true;
-    }
-
-    if (event.which == 1) {
-      leftMouseButtonState.beginPositionX = event.offsetX;
-      leftMouseButtonState.beginPositionY = event.offsetY;
-      leftMouseButtonState.holdButton = true;
+    if (event.which == 2) {
+      wheelMouseState.beginPositionX = event.offsetX;
+      wheelMouseState.beginPositionY = event.offsetY;
+      wheelMouseState.holdButton = true;
     }
   };
 
   canvas.onmouseup = function (event) {
-    if (event.which == 2 && wheelState.holdWheel) {
-      wheelState.holdWheel = false;
-    }
-
-    if (event.which == 1 && leftMouseButtonState.holdButton) {
-      leftMouseButtonState.holdButton = false;
+    if (event.which == 2 && wheelMouseState.holdButton) {
+      wheelMouseState.holdButton = false;
     }
   };
 
@@ -36479,44 +36458,26 @@ function orbitControls(canvas, objectUnderControl, camera, WIDTH_CANVAS, HEIGHT_
   };
 
   canvas.onmousemove = function (event) {
-    if (wheelState.holdWheel) {
-      var stepX = (wheelState.beginPositionX - event.offsetX) / WIDTH_CANVAS;
-      var stepY = (wheelState.beginPositionY - event.offsetY) / HEIGHT_CANVAS;
+    if (wheelMouseState.holdButton) {
+      var stepX = (wheelMouseState.beginPositionX - event.offsetX) / WIDTH_CANVAS;
+      var stepY = (wheelMouseState.beginPositionY - event.offsetY) / HEIGHT_CANVAS;
 
-      if (stepX < 0 && wheelState.previousPositionX > event.offsetX || stepX > 0 && wheelState.previousPositionX < event.offsetX) {
-        wheelState.beginPositionX = wheelState.previousPositionX;
+      if (stepX < 0 && wheelMouseState.previousPositionX > event.offsetX || stepX > 0 && wheelMouseState.previousPositionX < event.offsetX) {
+        wheelMouseState.beginPositionX = wheelMouseState.previousPositionX;
       }
 
-      if (stepY < 0 && wheelState.previousPositionY > event.offsetY || stepY > 0 && wheelState.previousPositionY < event.offsetY) {
-        wheelState.beginPositionY = wheelState.previousPositionY;
+      if (stepY < 0 && wheelMouseState.previousPositionY > event.offsetY || stepY > 0 && wheelMouseState.previousPositionY < event.offsetY) {
+        wheelMouseState.beginPositionY = wheelMouseState.previousPositionY;
       }
 
-      camera.rotation.y += stepX / wheelState.coefYaw;
-      camera.rotation.x += stepY / wheelState.coefPitch;
-      wheelState.previousPositionX = event.offsetX;
-      wheelState.previousPositionY = event.offsetY;
-    }
-
-    if (leftMouseButtonState.holdButton) {
-      var _stepX = (leftMouseButtonState.beginPositionX - event.offsetX) / WIDTH_CANVAS;
-
-      var _stepY = (leftMouseButtonState.beginPositionY - event.offsetY) / HEIGHT_CANVAS;
-
-      if (_stepX < 0 && leftMouseButtonState.previousPositionX > event.offsetX || _stepX > 0 && leftMouseButtonState.previousPositionX < event.offsetX) {
-        leftMouseButtonState.beginPositionX = leftMouseButtonState.previousPositionX;
-      }
-
-      if (_stepY < 0 && leftMouseButtonState.previousPositionY > event.offsetY || _stepY > 0 && leftMouseButtonState.previousPositionY < event.offsetY) {
-        leftMouseButtonState.beginPositionY = leftMouseButtonState.previousPositionY;
-      }
-
-      camera.translateX(_stepX / leftMouseButtonState.coef);
-      camera.translateY(-_stepY / leftMouseButtonState.coef);
-      leftMouseButtonState.previousPositionX = event.offsetX;
-      leftMouseButtonState.previousPositionY = event.offsetY;
+      camera.translateX(stepX / wheelMouseState.coef);
+      camera.translateY(-stepY / wheelMouseState.coef);
+      wheelMouseState.previousPositionX = event.offsetX;
+      wheelMouseState.previousPositionY = event.offsetY;
     }
 
     camera.lookAt(objectUnderControl.position);
+    camera.updateMatrixWorld();
   };
 }
 },{}],"src/init-scene.js":[function(require,module,exports) {
@@ -36693,35 +36654,14 @@ function () {
 
     this.countPolygonsInOneFace = 1; //количество полигонов в одной грани
 
-    this.pointsGrid = [];
-
-    this._getGrid();
-
     this.colorMesh = 0xFF1122;
-    this.pointsMesh = [];
-
-    this._getMesh();
+    this.pointsMesh = this._getMesh();
   }
 
   _createClass(Triangle, [{
-    key: "_getGrid",
-    value: function _getGrid() {
-      var lines = [];
-
-      for (var i = 0; i < this.vertices.length; i++) {
-        var firstPoint = this.vertices[i];
-
-        for (var j = i + 1; j < this.vertices.length; j++) {
-          var secondPoint = this.vertices[j];
-          this.pointsGrid.push(firstPoint);
-          this.pointsGrid.push(secondPoint);
-        }
-      }
-    }
-  }, {
     key: "_getMesh",
     value: function _getMesh() {
-      this.pointsMesh = this.vertices;
+      return this.vertices;
     }
   }]);
 
@@ -36760,32 +36700,13 @@ function () {
     this.countPolygonsInOneFace = 2; //количество полигонов в грани
 
     this.colorMesh = 0x9922FF;
-    this.pointsGrid = [];
-
-    this._getGrid();
-
-    this.pointsMesh = [];
-
-    this._getMesh();
+    this.pointsMesh = this._getMesh();
   }
 
   _createClass(Square, [{
-    key: "_getGrid",
-    value: function _getGrid() {
-      for (var i = 0; i < this.vertices.length; i++) {
-        var firstPoint = this.vertices[i];
-
-        for (var j = i + 1; j < this.vertices.length; j++) {
-          var secondPoint = this.vertices[j];
-          this.pointsGrid.push(firstPoint);
-          this.pointsGrid.push(secondPoint);
-        }
-      }
-    }
-  }, {
     key: "_getMesh",
     value: function _getMesh() {
-      this.pointsMesh = [this.vertices[0], this.vertices[1], this.vertices[3], this.vertices[2], this.vertices[1], this.vertices[3]];
+      return [this.vertices[0], this.vertices[1], this.vertices[3], this.vertices[2], this.vertices[1], this.vertices[3]];
     }
   }]);
 
@@ -36819,33 +36740,13 @@ function () {
     this.countEdgesToVertice = 3;
     this.countPolygonsInOneFace = 1;
     this.colorMesh = 0xED5599;
-    this.pointsGrid = [];
-
-    this._getGrid();
-
-    this.pointsMesh = [];
-    console.log(this.pointsMesh);
-
-    this._getMesh();
+    this.pointsMesh = this._getMesh();
   }
 
   _createClass(Thetra, [{
-    key: "_getGrid",
-    value: function _getGrid() {
-      for (var i = 0; i < this.vertices.length; i++) {
-        var firstPoint = this.vertices[i];
-
-        for (var j = i + 1; j < this.vertices.length; j++) {
-          var secondPoint = this.vertices[j];
-          this.pointsGrid.push(firstPoint);
-          this.pointsGrid.push(secondPoint);
-        }
-      }
-    }
-  }, {
     key: "_getMesh",
     value: function _getMesh() {
-      this.pointsMesh = [this.vertices[0], this.vertices[1], this.vertices[2], this.vertices[0], this.vertices[2], this.vertices[3], this.vertices[0], this.vertices[3], this.vertices[1], this.vertices[3], this.vertices[2], this.vertices[1]];
+      return [this.vertices[0], this.vertices[1], this.vertices[2], this.vertices[0], this.vertices[2], this.vertices[3], this.vertices[0], this.vertices[3], this.vertices[1], this.vertices[3], this.vertices[2], this.vertices[1]];
     }
   }]);
 
@@ -36883,21 +36784,20 @@ function () {
 
     this.countPolygonsInOneFace = 4; //количество полигонов в одной грани
 
-    this.colorMesh = 0xFFFF99;
-    this.pointsGrid = [];
-
-    this._getGrid();
+    this.colorMesh = 0x99ffCC;
+    this.pointsMesh = this._getMesh();
   }
 
   _createClass(Cube, [{
-    key: "_getGrid",
-    value: function _getGrid() {
-      var points = [];
-      return points;
-    }
-  }, {
     key: "_getMesh",
-    value: function _getMesh() {}
+    value: function _getMesh() {
+      return [this.vertices[0], this.vertices[1], this.vertices[3], //back 
+      this.vertices[2], this.vertices[1], this.vertices[3], this.vertices[0], this.vertices[1], this.vertices[5], //left
+      this.vertices[6], this.vertices[1], this.vertices[5], this.vertices[0], this.vertices[5], this.vertices[3], //down
+      this.vertices[4], this.vertices[5], this.vertices[3], this.vertices[1], this.vertices[6], this.vertices[2], //up
+      this.vertices[7], this.vertices[6], this.vertices[2], this.vertices[2], this.vertices[3], this.vertices[7], //right
+      this.vertices[4], this.vertices[3], this.vertices[7], this.vertices[4], this.vertices[5], this.vertices[7], this.vertices[6], this.vertices[5], this.vertices[7]];
+    }
   }]);
 
   return Cube;
@@ -36967,31 +36867,14 @@ function () {
         break;
     }
 
-    this.pointsObjectGrid = [];
-
-    this._getObjectGrid();
-
-    this.pointsMesh = [];
-
-    this._getMesh();
+    this.mesh = undefined;
+    this.lineSegments = undefined;
+    this.pointsMesh = this.figure.pointsMesh;
+    this.listPolygons = [];
+    this.colorPolygon = 0xffff00;
   }
 
   _createClass(ObjectOnScene, [{
-    key: "_getObjectGrid",
-    value: function _getObjectGrid() {
-      this.pointsObjectGrid = this.figure.pointsGrid;
-    }
-  }, {
-    key: "_getMesh",
-    value: function _getMesh() {
-      this.pointsMesh = this.figure.pointsMesh;
-    }
-  }, {
-    key: "_getDistanceBetweenPoints",
-    value: function _getDistanceBetweenPoints(firstPoint, secondPoint) {
-      return Math.sqrt(Math.pow(firstPoint[0] - secondPoint[0], 2) + Math.pow(firstPoint[1] - secondPoint[1], 2) + Math.pow(firstPoint[2] - secondPoint[2], 2));
-    }
-  }, {
     key: "_getRandom",
     value: function _getRandom(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -37161,24 +37044,47 @@ var renderer = new THREE.WebGLRenderer({
 });
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height);
-window.addEventListener('resize', function () {
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-});
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
 renderer.setClearColor("#8866aa");
 var objectsInDataset = [];
-var reader = new _datasetReader.default(_small_dataset.default);
 var listObjectsOnScene = [];
-var pointOfView = {
-  x: 0,
-  y: 0,
-  z: 0
-};
+var reader = new _datasetReader.default(_small_dataset.default);
 init();
 loadObjectsFromDataset();
+loadObjectsOnScene();
 animate();
 /* ------------------------------------------------------------------------- */
+
+function onPointerMove(event) {
+  mouse.x = event.clientX / canvas.width * 2 - 1;
+  mouse.y = -(event.clientY / canvas.height) * 2 + 1;
+}
+
+function onClickMouse(event) {
+  var listPoly = [];
+
+  for (var i = 0; i < listObjectsOnScene.length; i++) {
+    if (!listObjectsOnScene[i].mesh.visible) continue;
+
+    for (var j = 0; j < listObjectsOnScene[i].listPolygons.length; j++) {
+      var poly = listObjectsOnScene[i].listPolygons[j];
+      listPoly.push(poly);
+    }
+  }
+
+  var intersects = raycaster.intersectObjects(listPoly);
+
+  if (intersects.length == 0) {
+    for (var _i = 0; _i < listPoly.length; _i++) {
+      listPoly[_i].material.wireframe = true;
+    }
+
+    return;
+  }
+
+  intersects[0].object.material.wireframe = !intersects[0].object.material.wireframe;
+}
 
 function preloadSkybox() {
   if (skyboxLoader.readyTextures.length == 6 && !skyboxLoader.isInitSkybox) {
@@ -37194,25 +37100,26 @@ function initSkybox() {
 }
 
 function initLight() {
-  var pointLightLeftFront = new THREE.PointLight(0xFFFFFF, 1, 100);
-  pointLightLeftFront.position.set(-5, 0, 5);
-  var pointLightRightFront = new THREE.PointLight(0xFFFFFF, 1, 100);
-  pointLightRightFront.position.set(5, 0, 5);
-  var pointLightLeftBack = new THREE.PointLight(0xFFFFFF, 1, 100);
-  pointLightLeftBack.position.set(-5, 0, -5);
-  var pointLightRightBack = new THREE.PointLight(0xFFFFFF, 1, 100);
-  pointLightRightBack.position.set(5, 0, -5);
+  var pointLightLeftFront = new THREE.PointLight(0xFFFFF0, 1, 100);
+  pointLightLeftFront.position.set(-10, 4, 10);
+  var pointLightRightFront = new THREE.PointLight(0xF0FFFF, 1, 100);
+  pointLightRightFront.position.set(10, 4, 10);
+  var pointLightLeftBack = new THREE.PointLight(0xFFF0FF, 1, 100);
+  pointLightLeftBack.position.set(-10, 4, -10);
+  var pointLightRightBack = new THREE.PointLight(0xF0FFFF, 1, 100);
+  pointLightRightBack.position.set(10, 4, -10);
   scene.add(pointLightLeftFront);
   scene.add(pointLightRightFront);
   scene.add(pointLightLeftBack);
   scene.add(pointLightRightBack);
+  scene.add(new THREE.AmbientLight(0x222222));
 }
 
 function init() {
   initLight();
-  var planeGeometry = new THREE.PlaneGeometry(20, 20);
+  var planeGeometry = new THREE.PlaneGeometry(30, 30);
   var planeMaterial = new THREE.MeshPhongMaterial({
-    color: "rgb(" + getRandom(90, 100) + "," + getRandom(90, 100) + "," + getRandom(90, 100) + ")",
+    color: "rgb(" + getRandom(80, 90) + "," + getRandom(80, 90) + "," + getRandom(80, 90) + ")",
     side: THREE.DoubleSide
   });
   var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -37232,21 +37139,27 @@ function init() {
     axes.visible = !axes.visible;
   };
 
+  document.addEventListener('mousemove', onPointerMove, false);
+  document.addEventListener('click', onClickMouse);
   (0, _sceneController.default)(canvas, axes, camera, canvas.width, canvas.height);
 }
 
 function animate() {
   requestAnimationFrame(animate);
+  raycaster.setFromCamera(mouse, camera);
   preloadSkybox();
   renderer.render(scene, camera);
   draw();
 }
 
 function draw() {
-  for (var _i = 0, _listObjectsOnScene = listObjectsOnScene; _i < _listObjectsOnScene.length; _i++) {
-    var obj = _listObjectsOnScene[_i];
-    if (obj.object.key != 'plane') obj.line.visible = obj.object.checker.checked;
-    obj.mesh.visible = obj.object.checker.checked;
+  for (var _i2 = 0, _listObjectsOnScene = listObjectsOnScene; _i2 < _listObjectsOnScene.length; _i2++) {
+    var obj = _listObjectsOnScene[_i2];
+    obj.mesh.visible = obj.checker.checked;
+
+    for (var i = 0; i < obj.listPolygons.length; i++) {
+      obj.listPolygons[i].visible = obj.checker.checked;
+    }
   }
 }
 
@@ -37262,10 +37175,9 @@ function loadObjectsFromDataset() {
           key = _step$value[0],
           value = _step$value[1];
 
-      for (var _i4 = 0; _i4 < value.length; _i4++) {
-        var _object2 = new _objectOnScene.default(key, value[_i4], _i4);
-
-        objectsInDataset.push(_object2);
+      for (var i = 0; i < value.length; i++) {
+        var object = new _objectOnScene.default(key, value[i], i);
+        objectsInDataset.push(object);
       }
     }
   } catch (err) {
@@ -37273,67 +37185,72 @@ function loadObjectsFromDataset() {
   } finally {
     _iterator.f();
   }
+}
 
-  var listObjects = [];
-
-  for (var _i2 = 0, _objectsInDataset = objectsInDataset; _i2 < _objectsInDataset.length; _i2++) {
-    var object = _objectsInDataset[_i2];
+function loadObjectsOnScene() {
+  for (var _i3 = 0, _objectsInDataset = objectsInDataset; _i3 < _objectsInDataset.length; _i3++) {
+    var object = _objectsInDataset[_i3];
     listNameObjects.insertAdjacentHTML('afterend', object.styleContentHTML);
     var checker = document.getElementById(object.nameContentHTMLCheckbox);
     checker.checked = true;
     object.checker = checker;
-    var listPoints = object.pointsObjectGrid;
-    var objectPoints = [];
+    console.log(object.name);
+    var polyMesh = buildMesh(object.figure.pointsMesh, object.figure.colorMesh);
+    object.mesh = polyMesh.mesh;
+    object.listPolygons = polyMesh.listPolygons;
+    listObjectsOnScene.push(object);
+    scene.add(object.mesh);
+  }
+}
 
-    for (var i = 0; i < listPoints.length; i++) {
-      var vector = new THREE.Vector3(listPoints[i][0], listPoints[i][1], listPoints[i][2]);
-      objectPoints.push(vector);
+function buildMesh(points) {
+  var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+  var listPolygons = [];
+  var vertices = [];
+  var pointsPoly = [];
+
+  for (var i = 0; i < points.length; i++) {
+    vertices.push(parseFloat(points[i][0]));
+    vertices.push(parseFloat(points[i][1]));
+    vertices.push(parseFloat(points[i][2]));
+    pointsPoly.push(parseFloat(points[i][0]));
+    pointsPoly.push(parseFloat(points[i][1]));
+    pointsPoly.push(parseFloat(points[i][2]));
+
+    if (pointsPoly.length == 9) {
+      listPolygons.push(buildPolygon(pointsPoly));
+      pointsPoly = [];
     }
-
-    var material = new THREE.LineBasicMaterial({
-      color: object.color
-    });
-    var geometry = new THREE.BufferGeometry().setFromPoints(objectPoints);
-    var line = new THREE.Line(geometry, material);
-    scene.add(line);
-    listObjects.push({
-      object: object,
-      line: line
-    });
   }
 
-  for (var _i3 = 0; _i3 < listObjects.length; _i3++) {
-    var _object = listObjects[_i3].object;
-    var _line = listObjects[_i3].line;
-    var figure = listObjects[_i3].object.figure;
+  var material = new THREE.MeshPhongMaterial({
+    side: THREE.DoubleSide,
+    color: color
+  });
+  var geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+  geometry.computeVertexNormals();
+  var mesh = new THREE.Mesh(geometry, material);
+  mesh.material.transparent = true;
+  mesh.material.opacity = 0.7;
+  return {
+    mesh: mesh,
+    listPolygons: listPolygons
+  };
+}
 
-    var _material = new THREE.MeshPhongMaterial({
-      color: figure.colorMesh,
-      side: THREE.DoubleSide
-    });
-
-    var _geometry = new THREE.BufferGeometry();
-
-    var vertices = [];
-
-    for (var j = 0; j < figure.pointsMesh.length; j++) {
-      vertices.push(figure.pointsMesh[j][0]);
-      vertices.push(figure.pointsMesh[j][1]);
-      vertices.push(figure.pointsMesh[j][2]);
-    }
-
-    _geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
-
-    _geometry.computeVertexNormals();
-
-    var mesh = new THREE.Mesh(_geometry, _material);
-    scene.add(mesh);
-    listObjectsOnScene.push({
-      object: _object,
-      line: _line,
-      mesh: mesh
-    });
-  }
+function buildPolygon(points) {
+  var material = new THREE.MeshBasicMaterial({
+    side: THREE.DoubleSide,
+    color: 0x111111,
+    wireframe: true
+  });
+  var geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(points), 3));
+  geometry.computeVertexNormals();
+  var mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+  return mesh;
 }
 
 function getRandom(min, max) {
@@ -37367,7 +37284,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56451" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50881" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
