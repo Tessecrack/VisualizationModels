@@ -37240,9 +37240,9 @@ function buildMesh(points) {
 }
 
 function buildPolygon(points) {
-  var material = new THREE.MeshBasicMaterial({
+  var material = new THREE.MeshLambertMaterial({
     side: THREE.DoubleSide,
-    color: 0x111111,
+    color: 0x000000,
     wireframe: true
   });
   var geometry = new THREE.BufferGeometry();

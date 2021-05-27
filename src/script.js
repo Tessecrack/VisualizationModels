@@ -201,7 +201,7 @@ function buildMesh(points, color = undefined) {
 }
 
 function buildPolygon(points) {
-    let material = new THREE.MeshBasicMaterial({side : THREE.DoubleSide, color : 0x111111, wireframe : true});
+    let material = new THREE.MeshLambertMaterial({side : THREE.DoubleSide, color:0x000000, wireframe : true});
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(points), 3));
     geometry.computeVertexNormals();
