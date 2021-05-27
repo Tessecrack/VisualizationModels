@@ -36886,17 +36886,17 @@ function () {
 
 exports.default = ObjectOnScene;
 },{"./figures/triangle":"src/figures/triangle.js","./figures/square":"src/figures/square.js","./figures/thetra":"src/figures/thetra.js","./figures/cube":"src/figures/cube.js"}],"textures/blizzard/bk.jpg":[function(require,module,exports) {
-module.exports = "/bk.099a5aa3.jpg";
+module.exports = "./bk.099a5aa3.jpg";
 },{}],"./textures/blizzard/ft.jpg":[function(require,module,exports) {
-module.exports = "/ft.9a70cffd.jpg";
+module.exports = "./ft.9a70cffd.jpg";
 },{}],"./textures/blizzard/dn.jpg":[function(require,module,exports) {
-module.exports = "/dn.ff1a96e3.jpg";
+module.exports = "./dn.ff1a96e3.jpg";
 },{}],"./textures/blizzard/up.jpg":[function(require,module,exports) {
-module.exports = "/up.1009898b.jpg";
+module.exports = "./up.1009898b.jpg";
 },{}],"./textures/blizzard/lf.jpg":[function(require,module,exports) {
-module.exports = "/lf.26747d39.jpg";
+module.exports = "./lf.26747d39.jpg";
 },{}],"./textures/blizzard/rt.jpg":[function(require,module,exports) {
-module.exports = "/rt.4d42f94c.jpg";
+module.exports = "./rt.4d42f94c.jpg";
 },{}],"src/skybox-loader.js":[function(require,module,exports) {
 "use strict";
 
