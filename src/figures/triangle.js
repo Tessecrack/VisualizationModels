@@ -1,5 +1,3 @@
-import {default as Line} from './line'
-
 export default class Triangle {
     constructor(points) {
         this.vertices = points;                 //вершины
@@ -9,6 +7,7 @@ export default class Triangle {
         this.countPolygonsInOneFace = 1;        //количество полигонов в одной грани
 
         this.colorMesh = 0xFF1122;
+        this.strColorMesh = '#FF1122';
         this.pointsMesh = this._getMesh();
     }
 

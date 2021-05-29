@@ -7,6 +7,7 @@ export default class Square {
         this.countPolygonsInOneFace = 2;        //количество полигонов в грани
 
         this.colorMesh = 0x9922FF;
+        this.strColorMesh = '#9922FF';
         this.pointsMesh = this._getMesh();
     }
 

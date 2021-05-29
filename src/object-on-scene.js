@@ -10,18 +10,6 @@ export default class ObjectOnScene {
         this.points = points;
         
         this.checker = undefined;
-        
-        this.color = "rgb(" + this._getRandom(130, 255) + "," + this._getRandom(130, 255) + "," + this._getRandom(130, 255) + ")";
-
-        this.nameContentHTMLButton  = this.name + "button";
-        this.nameContentHTMLCheckbox = this.name + "checkbox";
-
-        this.styleContentHTML = "<font><div><input type=\"checkbox\" id=" + this.nameContentHTMLCheckbox + " name=" 
-        + this.name + " checked> <label for="+this.name + ">" 
-        + this.name + "</label><button id=\"" + this.nameContentHTMLButton + 
-        "\" style=\"margin: 3px 3px 3px 10px; padding: 2px 2px 2px 2px\"><font style=\"\">Выбрать</font></button></div></font>"
-
-
         this.figure = undefined; 
 
         switch (this.key) {
@@ -39,6 +27,8 @@ export default class ObjectOnScene {
             default: break;
         }
 
+        this.colorPicker = undefined;
+
         this.mesh = undefined; 
         this.lineSegments = undefined; 
 
@@ -46,6 +36,37 @@ export default class ObjectOnScene {
 
         this.listPolygons = [];
         this.colorPolygon = 0xffff00;
+
+        this.centerPoint = this._getCenterPoint();
+
+        this.nameContentHTMLButton  = this.name + "button";
+        this.nameContentHTMLCheckbox = this.name + "checkbox";
+        this.nameContentHTMLColorPicker = this.name + "colorPicker";
+
+        this.styleContentHTML = "<font><div><input type=\"checkbox\" id=" + this.nameContentHTMLCheckbox + " name=" 
+        + this.name + " checked> <label for="+this.name + ">" 
+        + this.name + "</label><button id=\"" + this.nameContentHTMLButton + 
+        "\" style=\"margin: 3px 3px 3px 10px; padding: 2px 2px 2px 2px\"><font style=\"\">Выбрать</font></button></div></font>"
+
+        this.styleContentHTMLProperties = 
+        "<font><div><label>Цвет: </label><input type=\"color\" id=" + this.nameContentHTMLColorPicker + " value="+this.figure.strColorMesh + "></div></font>";
+    }
+
+    _getCenterPoint() {
+        let xAverage = 0;
+        let yAverage = 0;
+        let zAverage = 0;
+
+        for (let i = 0; i < this.points.length; i++) {
+            xAverage += this.points[i][0];
+            yAverage += this.points[i][1];
+            zAverage += this.points[i][2];
+        }
+
+        xAverage /= this.points.length;
+        yAverage /= this.points.length;
+        zAverage /= this.points.length;
+        return {x : xAverage, y : yAverage, z : zAverage};
     }
 
     _getRandom(min, max) {

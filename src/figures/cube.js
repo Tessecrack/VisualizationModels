@@ -7,6 +7,7 @@ export default class Cube {
         this.countPolygonsInOneFace = 4;        //количество полигонов в одной грани
 
         this.colorMesh = 0x99ffCC;
+        this.strColorMesh = '#99ffcc';
         this.pointsMesh = this._getMesh();
     }
 

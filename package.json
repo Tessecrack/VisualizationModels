@@ -17,9 +17,9 @@
     "url": "https://github.com/Tessecrack/VisualizationModels/issues"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.14.3",
     "parcel": "^1.12.4",
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.5"
   },
   "homepage": "https://github.com/Tessecrack/VisualizationModels#readme",
   "dependencies": {

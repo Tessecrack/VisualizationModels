@@ -8,6 +8,7 @@ export default class Thetra {
         this.countPolygonsInOneFace = 1;
 
         this.colorMesh = 0xED5599;
+        this.strColorMesh = '#ED5599';
         this.pointsMesh = this._getMesh();
     }
 

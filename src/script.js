@@ -5,9 +5,11 @@ import initScene from './init-scene.js'
 import DatasetReader from './dataset-reader';
 import {default as ObjectOnScene} from './object-on-scene';
 import {default as SkyboxLoader}  from './skybox-loader';
+import { Vector3 } from 'three';
 
 const canvas = document.getElementById('canvas');
 const listNameObjects = document.getElementById('listNameObjects');
+const listPropertiesObject = document.getElementById('listProperties');
 
 initScene(document);
 
@@ -25,6 +27,7 @@ renderer.setClearColor("#8866aa");
 let objectsInDataset = [];
 let listObjectsOnScene = [];
 let reader = new DatasetReader(dataset_meshes);
+let pointOfView = new Vector3(0, 0 ,0);
 
 init();
 loadObjectsFromDataset();
@@ -36,9 +39,7 @@ animate();
 function onPointerMove(event) {
     mouse.x = ( event.clientX / canvas.width ) * 2 - 1;
     mouse.y = - ( event.clientY / canvas.height ) * 2 + 1;
-}
 
-function onClickMouse(event) {
     let listPoly = [];
     for(let i = 0; i < listObjectsOnScene.length; i++) {
         if (!listObjectsOnScene[i].mesh.visible)  continue;
@@ -49,14 +50,26 @@ function onClickMouse(event) {
     }
 
     const intersects = raycaster.intersectObjects(listPoly);
-
     if (intersects.length == 0) {
         for (let i = 0; i < listPoly.length; i++) {
             listPoly[i].material.wireframe = true;
         }
         return;
     }
-    intersects[0].object.material.wireframe = !intersects[0].object.material.wireframe;
+
+    let object = intersects[0].object;
+    if (object.material.wireframe == true) {
+        object.material.wireframe = false;
+    }
+    for (let i = 0; i < listPoly.length; i++) {
+        if (object != listPoly[i])
+            listPoly[i].material.wireframe = true;
+    }
+}
+
+function onClickMouse(event) {
+
+
 
 }
 
@@ -119,13 +132,15 @@ function init() {
 
     scene.add(axes);
     scene.add(planeMesh);
+
     document.getElementById('planeHide').onclick = () => { planeMesh.visible = !planeMesh.visible; }
     document.getElementById('axesHide').onclick = () => { axes.visible = !axes.visible; }
+    document.getElementById('beginPositionCamera').onclick = () => {pointOfView.x = 0; pointOfView.y = 0; pointOfView.z = 0};
 
     document.addEventListener('mousemove', onPointerMove, false);
     document.addEventListener('click', onClickMouse);
 
-    initSceneController(canvas, axes, camera, canvas.width, canvas.height);
+    initSceneController(canvas, pointOfView, camera, canvas.width, canvas.height);
 }
 
 function animate() {
@@ -160,16 +175,35 @@ function loadObjectsOnScene() {
         let checker = document.getElementById(object.nameContentHTMLCheckbox);
         checker.checked = true;
         object.checker = checker;
-        console.log(object.name);
         let polyMesh = buildMesh(object.figure.pointsMesh, object.figure.colorMesh);
 
         object.mesh         = polyMesh.mesh;
         object.listPolygons = polyMesh.listPolygons;
 
+        let button = document.getElementById(object.nameContentHTMLButton);
+
+        button.onclick = () => {
+            listPropertiesObject.innerHTML = object.styleContentHTMLProperties;   
+            if (object.colorPicker == undefined) {
+                object.colorPicker = document.getElementById(object.nameContentHTMLColorPicker);
+                
+                object.colorPicker.addEventListener('input', () => {
+                    let rgbValue = hexToRgb(object.colorPicker.value);   
+                    object.mesh.material.color.r = rgbValue.r/255;
+                    object.mesh.material.color.g = rgbValue.g/255;
+                    object.mesh.material.color.b = rgbValue.b/255;
+                })
+            }
+
+            pointOfView.x = object.centerPoint.x;
+            pointOfView.y = object.centerPoint.y;
+            pointOfView.z = object.centerPoint.z;
+        }
         listObjectsOnScene.push(object);
         scene.add(object.mesh);
     }
 }
+
 function buildMesh(points, color = undefined) {
     let listPolygons = [];
     let vertices     = [];
@@ -190,13 +224,13 @@ function buildMesh(points, color = undefined) {
         }
     }
 
-    let material = new THREE.MeshPhongMaterial({side : THREE.DoubleSide, color : color});
+    let material = new THREE.MeshBasicMaterial({side : THREE.DoubleSide, color : color});
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
     geometry.computeVertexNormals();
     const mesh = new THREE.Mesh(geometry, material);
     mesh.material.transparent = true;
-    mesh.material.opacity = 0.7;
+    mesh.material.opacity = 0.9;
     return { mesh, listPolygons };
 }
 
@@ -206,6 +240,7 @@ function buildPolygon(points) {
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(points), 3));
     geometry.computeVertexNormals();
     const mesh = new THREE.Mesh(geometry, material);
+    mesh.visible = false;
     scene.add(mesh);
     return mesh;
 }
@@ -214,3 +249,11 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 32),
+    g: parseInt(result[2], 32),
+    b: parseInt(result[3], 32)
+  } : null;
+}

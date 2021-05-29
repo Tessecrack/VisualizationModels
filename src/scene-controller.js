@@ -2,7 +2,7 @@ export default function initSceneController(canvas, objectUnderControl, camera, 
     orbitControls(canvas, objectUnderControl, camera, WIDTH_CANVAS, HEIGHT_CANVAS);
 }
 
-function orbitControls(canvas, objectUnderControl, camera, WIDTH_CANVAS, HEIGHT_CANVAS) {
+function orbitControls(canvas, pointOfView, camera, WIDTH_CANVAS, HEIGHT_CANVAS) {
     let wheelMouseState = {
         holdButton : false, 
     
@@ -57,7 +57,7 @@ function orbitControls(canvas, objectUnderControl, camera, WIDTH_CANVAS, HEIGHT_
             wheelMouseState.previousPositionX = event.offsetX;
             wheelMouseState.previousPositionY = event.offsetY;
         }
-        camera.lookAt(objectUnderControl.position);
+        camera.lookAt(pointOfView);
         camera.updateMatrixWorld();
     }
 }
